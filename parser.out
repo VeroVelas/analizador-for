@@ -1,0 +1,496 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> programa
+Rule 1     programa -> lista_declaraciones
+Rule 2     lista_declaraciones -> lista_declaraciones declaracion
+Rule 3     lista_declaraciones -> declaracion
+Rule 4     declaracion -> declaracion_variable
+Rule 5     declaracion -> sentencia
+Rule 6     declaracion_variable -> INT ID PUNTOYCOMA
+Rule 7     sentencia -> sentencia_for
+Rule 8     sentencia -> sentencia_imprimir
+Rule 9     sentencia -> sentencia_expresion
+Rule 10    sentencia_for -> FOR PARENIZQ inicializacion PUNTOYCOMA condicion PUNTOYCOMA incremento PARENDER LLAVEIZQ lista_sentencias LLAVEDER
+Rule 11    inicializacion -> ID IGUAL NUMERO
+Rule 12    condicion -> ID MENORIGUAL NUMERO
+Rule 13    incremento -> ID INCREMENTO
+Rule 14    lista_sentencias -> lista_sentencias sentencia
+Rule 15    lista_sentencias -> sentencia
+Rule 16    sentencia_imprimir -> IMPRIMIR PARENIZQ expresion PARENDER PUNTOYCOMA
+Rule 17    sentencia_expresion -> expresion PUNTOYCOMA
+Rule 18    expresion -> ID
+
+Terminals, with rules where they appear
+
+FOR                  : 10
+ID                   : 6 11 12 13 18
+IGUAL                : 11
+IMPRIMIR             : 16
+INCREMENTO           : 13
+INT                  : 6
+LLAVEDER             : 10
+LLAVEIZQ             : 10
+MENORIGUAL           : 12
+NUMERO               : 11 12
+PARENDER             : 10 16
+PARENIZQ             : 10 16
+PUNTOYCOMA           : 6 10 10 16 17
+error                : 
+
+Nonterminals, with rules where they appear
+
+condicion            : 10
+declaracion          : 2 3
+declaracion_variable : 4
+expresion            : 16 17
+incremento           : 10
+inicializacion       : 10
+lista_declaraciones  : 1 2
+lista_sentencias     : 10 14
+programa             : 0
+sentencia            : 5 14 15
+sentencia_expresion  : 9
+sentencia_for        : 7
+sentencia_imprimir   : 8
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . programa
+    (1) programa -> . lista_declaraciones
+    (2) lista_declaraciones -> . lista_declaraciones declaracion
+    (3) lista_declaraciones -> . declaracion
+    (4) declaracion -> . declaracion_variable
+    (5) declaracion -> . sentencia
+    (6) declaracion_variable -> . INT ID PUNTOYCOMA
+    (7) sentencia -> . sentencia_for
+    (8) sentencia -> . sentencia_imprimir
+    (9) sentencia -> . sentencia_expresion
+    (10) sentencia_for -> . FOR PARENIZQ inicializacion PUNTOYCOMA condicion PUNTOYCOMA incremento PARENDER LLAVEIZQ lista_sentencias LLAVEDER
+    (16) sentencia_imprimir -> . IMPRIMIR PARENIZQ expresion PARENDER PUNTOYCOMA
+    (17) sentencia_expresion -> . expresion PUNTOYCOMA
+    (18) expresion -> . ID
+
+    INT             shift and go to state 6
+    FOR             shift and go to state 11
+    IMPRIMIR        shift and go to state 12
+    ID              shift and go to state 7
+
+    programa                       shift and go to state 1
+    lista_declaraciones            shift and go to state 2
+    declaracion                    shift and go to state 3
+    declaracion_variable           shift and go to state 4
+    sentencia                      shift and go to state 5
+    sentencia_for                  shift and go to state 8
+    sentencia_imprimir             shift and go to state 9
+    sentencia_expresion            shift and go to state 10
+    expresion                      shift and go to state 13
+
+state 1
+
+    (0) S' -> programa .
+
+
+
+state 2
+
+    (1) programa -> lista_declaraciones .
+    (2) lista_declaraciones -> lista_declaraciones . declaracion
+    (4) declaracion -> . declaracion_variable
+    (5) declaracion -> . sentencia
+    (6) declaracion_variable -> . INT ID PUNTOYCOMA
+    (7) sentencia -> . sentencia_for
+    (8) sentencia -> . sentencia_imprimir
+    (9) sentencia -> . sentencia_expresion
+    (10) sentencia_for -> . FOR PARENIZQ inicializacion PUNTOYCOMA condicion PUNTOYCOMA incremento PARENDER LLAVEIZQ lista_sentencias LLAVEDER
+    (16) sentencia_imprimir -> . IMPRIMIR PARENIZQ expresion PARENDER PUNTOYCOMA
+    (17) sentencia_expresion -> . expresion PUNTOYCOMA
+    (18) expresion -> . ID
+
+    $end            reduce using rule 1 (programa -> lista_declaraciones .)
+    INT             shift and go to state 6
+    FOR             shift and go to state 11
+    IMPRIMIR        shift and go to state 12
+    ID              shift and go to state 7
+
+    declaracion                    shift and go to state 14
+    declaracion_variable           shift and go to state 4
+    sentencia                      shift and go to state 5
+    sentencia_for                  shift and go to state 8
+    sentencia_imprimir             shift and go to state 9
+    sentencia_expresion            shift and go to state 10
+    expresion                      shift and go to state 13
+
+state 3
+
+    (3) lista_declaraciones -> declaracion .
+
+    INT             reduce using rule 3 (lista_declaraciones -> declaracion .)
+    FOR             reduce using rule 3 (lista_declaraciones -> declaracion .)
+    IMPRIMIR        reduce using rule 3 (lista_declaraciones -> declaracion .)
+    ID              reduce using rule 3 (lista_declaraciones -> declaracion .)
+    $end            reduce using rule 3 (lista_declaraciones -> declaracion .)
+
+
+state 4
+
+    (4) declaracion -> declaracion_variable .
+
+    INT             reduce using rule 4 (declaracion -> declaracion_variable .)
+    FOR             reduce using rule 4 (declaracion -> declaracion_variable .)
+    IMPRIMIR        reduce using rule 4 (declaracion -> declaracion_variable .)
+    ID              reduce using rule 4 (declaracion -> declaracion_variable .)
+    $end            reduce using rule 4 (declaracion -> declaracion_variable .)
+
+
+state 5
+
+    (5) declaracion -> sentencia .
+
+    INT             reduce using rule 5 (declaracion -> sentencia .)
+    FOR             reduce using rule 5 (declaracion -> sentencia .)
+    IMPRIMIR        reduce using rule 5 (declaracion -> sentencia .)
+    ID              reduce using rule 5 (declaracion -> sentencia .)
+    $end            reduce using rule 5 (declaracion -> sentencia .)
+
+
+state 6
+
+    (6) declaracion_variable -> INT . ID PUNTOYCOMA
+
+    ID              shift and go to state 15
+
+
+state 7
+
+    (18) expresion -> ID .
+
+    PUNTOYCOMA      reduce using rule 18 (expresion -> ID .)
+    PARENDER        reduce using rule 18 (expresion -> ID .)
+
+
+state 8
+
+    (7) sentencia -> sentencia_for .
+
+    INT             reduce using rule 7 (sentencia -> sentencia_for .)
+    FOR             reduce using rule 7 (sentencia -> sentencia_for .)
+    IMPRIMIR        reduce using rule 7 (sentencia -> sentencia_for .)
+    ID              reduce using rule 7 (sentencia -> sentencia_for .)
+    $end            reduce using rule 7 (sentencia -> sentencia_for .)
+    LLAVEDER        reduce using rule 7 (sentencia -> sentencia_for .)
+
+
+state 9
+
+    (8) sentencia -> sentencia_imprimir .
+
+    INT             reduce using rule 8 (sentencia -> sentencia_imprimir .)
+    FOR             reduce using rule 8 (sentencia -> sentencia_imprimir .)
+    IMPRIMIR        reduce using rule 8 (sentencia -> sentencia_imprimir .)
+    ID              reduce using rule 8 (sentencia -> sentencia_imprimir .)
+    $end            reduce using rule 8 (sentencia -> sentencia_imprimir .)
+    LLAVEDER        reduce using rule 8 (sentencia -> sentencia_imprimir .)
+
+
+state 10
+
+    (9) sentencia -> sentencia_expresion .
+
+    INT             reduce using rule 9 (sentencia -> sentencia_expresion .)
+    FOR             reduce using rule 9 (sentencia -> sentencia_expresion .)
+    IMPRIMIR        reduce using rule 9 (sentencia -> sentencia_expresion .)
+    ID              reduce using rule 9 (sentencia -> sentencia_expresion .)
+    $end            reduce using rule 9 (sentencia -> sentencia_expresion .)
+    LLAVEDER        reduce using rule 9 (sentencia -> sentencia_expresion .)
+
+
+state 11
+
+    (10) sentencia_for -> FOR . PARENIZQ inicializacion PUNTOYCOMA condicion PUNTOYCOMA incremento PARENDER LLAVEIZQ lista_sentencias LLAVEDER
+
+    PARENIZQ        shift and go to state 16
+
+
+state 12
+
+    (16) sentencia_imprimir -> IMPRIMIR . PARENIZQ expresion PARENDER PUNTOYCOMA
+
+    PARENIZQ        shift and go to state 17
+
+
+state 13
+
+    (17) sentencia_expresion -> expresion . PUNTOYCOMA
+
+    PUNTOYCOMA      shift and go to state 18
+
+
+state 14
+
+    (2) lista_declaraciones -> lista_declaraciones declaracion .
+
+    INT             reduce using rule 2 (lista_declaraciones -> lista_declaraciones declaracion .)
+    FOR             reduce using rule 2 (lista_declaraciones -> lista_declaraciones declaracion .)
+    IMPRIMIR        reduce using rule 2 (lista_declaraciones -> lista_declaraciones declaracion .)
+    ID              reduce using rule 2 (lista_declaraciones -> lista_declaraciones declaracion .)
+    $end            reduce using rule 2 (lista_declaraciones -> lista_declaraciones declaracion .)
+
+
+state 15
+
+    (6) declaracion_variable -> INT ID . PUNTOYCOMA
+
+    PUNTOYCOMA      shift and go to state 19
+
+
+state 16
+
+    (10) sentencia_for -> FOR PARENIZQ . inicializacion PUNTOYCOMA condicion PUNTOYCOMA incremento PARENDER LLAVEIZQ lista_sentencias LLAVEDER
+    (11) inicializacion -> . ID IGUAL NUMERO
+
+    ID              shift and go to state 21
+
+    inicializacion                 shift and go to state 20
+
+state 17
+
+    (16) sentencia_imprimir -> IMPRIMIR PARENIZQ . expresion PARENDER PUNTOYCOMA
+    (18) expresion -> . ID
+
+    ID              shift and go to state 7
+
+    expresion                      shift and go to state 22
+
+state 18
+
+    (17) sentencia_expresion -> expresion PUNTOYCOMA .
+
+    INT             reduce using rule 17 (sentencia_expresion -> expresion PUNTOYCOMA .)
+    FOR             reduce using rule 17 (sentencia_expresion -> expresion PUNTOYCOMA .)
+    IMPRIMIR        reduce using rule 17 (sentencia_expresion -> expresion PUNTOYCOMA .)
+    ID              reduce using rule 17 (sentencia_expresion -> expresion PUNTOYCOMA .)
+    $end            reduce using rule 17 (sentencia_expresion -> expresion PUNTOYCOMA .)
+    LLAVEDER        reduce using rule 17 (sentencia_expresion -> expresion PUNTOYCOMA .)
+
+
+state 19
+
+    (6) declaracion_variable -> INT ID PUNTOYCOMA .
+
+    INT             reduce using rule 6 (declaracion_variable -> INT ID PUNTOYCOMA .)
+    FOR             reduce using rule 6 (declaracion_variable -> INT ID PUNTOYCOMA .)
+    IMPRIMIR        reduce using rule 6 (declaracion_variable -> INT ID PUNTOYCOMA .)
+    ID              reduce using rule 6 (declaracion_variable -> INT ID PUNTOYCOMA .)
+    $end            reduce using rule 6 (declaracion_variable -> INT ID PUNTOYCOMA .)
+
+
+state 20
+
+    (10) sentencia_for -> FOR PARENIZQ inicializacion . PUNTOYCOMA condicion PUNTOYCOMA incremento PARENDER LLAVEIZQ lista_sentencias LLAVEDER
+
+    PUNTOYCOMA      shift and go to state 23
+
+
+state 21
+
+    (11) inicializacion -> ID . IGUAL NUMERO
+
+    IGUAL           shift and go to state 24
+
+
+state 22
+
+    (16) sentencia_imprimir -> IMPRIMIR PARENIZQ expresion . PARENDER PUNTOYCOMA
+
+    PARENDER        shift and go to state 25
+
+
+state 23
+
+    (10) sentencia_for -> FOR PARENIZQ inicializacion PUNTOYCOMA . condicion PUNTOYCOMA incremento PARENDER LLAVEIZQ lista_sentencias LLAVEDER
+    (12) condicion -> . ID MENORIGUAL NUMERO
+
+    ID              shift and go to state 27
+
+    condicion                      shift and go to state 26
+
+state 24
+
+    (11) inicializacion -> ID IGUAL . NUMERO
+
+    NUMERO          shift and go to state 28
+
+
+state 25
+
+    (16) sentencia_imprimir -> IMPRIMIR PARENIZQ expresion PARENDER . PUNTOYCOMA
+
+    PUNTOYCOMA      shift and go to state 29
+
+
+state 26
+
+    (10) sentencia_for -> FOR PARENIZQ inicializacion PUNTOYCOMA condicion . PUNTOYCOMA incremento PARENDER LLAVEIZQ lista_sentencias LLAVEDER
+
+    PUNTOYCOMA      shift and go to state 30
+
+
+state 27
+
+    (12) condicion -> ID . MENORIGUAL NUMERO
+
+    MENORIGUAL      shift and go to state 31
+
+
+state 28
+
+    (11) inicializacion -> ID IGUAL NUMERO .
+
+    PUNTOYCOMA      reduce using rule 11 (inicializacion -> ID IGUAL NUMERO .)
+
+
+state 29
+
+    (16) sentencia_imprimir -> IMPRIMIR PARENIZQ expresion PARENDER PUNTOYCOMA .
+
+    INT             reduce using rule 16 (sentencia_imprimir -> IMPRIMIR PARENIZQ expresion PARENDER PUNTOYCOMA .)
+    FOR             reduce using rule 16 (sentencia_imprimir -> IMPRIMIR PARENIZQ expresion PARENDER PUNTOYCOMA .)
+    IMPRIMIR        reduce using rule 16 (sentencia_imprimir -> IMPRIMIR PARENIZQ expresion PARENDER PUNTOYCOMA .)
+    ID              reduce using rule 16 (sentencia_imprimir -> IMPRIMIR PARENIZQ expresion PARENDER PUNTOYCOMA .)
+    $end            reduce using rule 16 (sentencia_imprimir -> IMPRIMIR PARENIZQ expresion PARENDER PUNTOYCOMA .)
+    LLAVEDER        reduce using rule 16 (sentencia_imprimir -> IMPRIMIR PARENIZQ expresion PARENDER PUNTOYCOMA .)
+
+
+state 30
+
+    (10) sentencia_for -> FOR PARENIZQ inicializacion PUNTOYCOMA condicion PUNTOYCOMA . incremento PARENDER LLAVEIZQ lista_sentencias LLAVEDER
+    (13) incremento -> . ID INCREMENTO
+
+    ID              shift and go to state 33
+
+    incremento                     shift and go to state 32
+
+state 31
+
+    (12) condicion -> ID MENORIGUAL . NUMERO
+
+    NUMERO          shift and go to state 34
+
+
+state 32
+
+    (10) sentencia_for -> FOR PARENIZQ inicializacion PUNTOYCOMA condicion PUNTOYCOMA incremento . PARENDER LLAVEIZQ lista_sentencias LLAVEDER
+
+    PARENDER        shift and go to state 35
+
+
+state 33
+
+    (13) incremento -> ID . INCREMENTO
+
+    INCREMENTO      shift and go to state 36
+
+
+state 34
+
+    (12) condicion -> ID MENORIGUAL NUMERO .
+
+    PUNTOYCOMA      reduce using rule 12 (condicion -> ID MENORIGUAL NUMERO .)
+
+
+state 35
+
+    (10) sentencia_for -> FOR PARENIZQ inicializacion PUNTOYCOMA condicion PUNTOYCOMA incremento PARENDER . LLAVEIZQ lista_sentencias LLAVEDER
+
+    LLAVEIZQ        shift and go to state 37
+
+
+state 36
+
+    (13) incremento -> ID INCREMENTO .
+
+    PARENDER        reduce using rule 13 (incremento -> ID INCREMENTO .)
+
+
+state 37
+
+    (10) sentencia_for -> FOR PARENIZQ inicializacion PUNTOYCOMA condicion PUNTOYCOMA incremento PARENDER LLAVEIZQ . lista_sentencias LLAVEDER
+    (14) lista_sentencias -> . lista_sentencias sentencia
+    (15) lista_sentencias -> . sentencia
+    (7) sentencia -> . sentencia_for
+    (8) sentencia -> . sentencia_imprimir
+    (9) sentencia -> . sentencia_expresion
+    (10) sentencia_for -> . FOR PARENIZQ inicializacion PUNTOYCOMA condicion PUNTOYCOMA incremento PARENDER LLAVEIZQ lista_sentencias LLAVEDER
+    (16) sentencia_imprimir -> . IMPRIMIR PARENIZQ expresion PARENDER PUNTOYCOMA
+    (17) sentencia_expresion -> . expresion PUNTOYCOMA
+    (18) expresion -> . ID
+
+    FOR             shift and go to state 11
+    IMPRIMIR        shift and go to state 12
+    ID              shift and go to state 7
+
+    lista_sentencias               shift and go to state 38
+    sentencia                      shift and go to state 39
+    sentencia_for                  shift and go to state 8
+    sentencia_imprimir             shift and go to state 9
+    sentencia_expresion            shift and go to state 10
+    expresion                      shift and go to state 13
+
+state 38
+
+    (10) sentencia_for -> FOR PARENIZQ inicializacion PUNTOYCOMA condicion PUNTOYCOMA incremento PARENDER LLAVEIZQ lista_sentencias . LLAVEDER
+    (14) lista_sentencias -> lista_sentencias . sentencia
+    (7) sentencia -> . sentencia_for
+    (8) sentencia -> . sentencia_imprimir
+    (9) sentencia -> . sentencia_expresion
+    (10) sentencia_for -> . FOR PARENIZQ inicializacion PUNTOYCOMA condicion PUNTOYCOMA incremento PARENDER LLAVEIZQ lista_sentencias LLAVEDER
+    (16) sentencia_imprimir -> . IMPRIMIR PARENIZQ expresion PARENDER PUNTOYCOMA
+    (17) sentencia_expresion -> . expresion PUNTOYCOMA
+    (18) expresion -> . ID
+
+    LLAVEDER        shift and go to state 40
+    FOR             shift and go to state 11
+    IMPRIMIR        shift and go to state 12
+    ID              shift and go to state 7
+
+    sentencia                      shift and go to state 41
+    sentencia_for                  shift and go to state 8
+    sentencia_imprimir             shift and go to state 9
+    sentencia_expresion            shift and go to state 10
+    expresion                      shift and go to state 13
+
+state 39
+
+    (15) lista_sentencias -> sentencia .
+
+    LLAVEDER        reduce using rule 15 (lista_sentencias -> sentencia .)
+    FOR             reduce using rule 15 (lista_sentencias -> sentencia .)
+    IMPRIMIR        reduce using rule 15 (lista_sentencias -> sentencia .)
+    ID              reduce using rule 15 (lista_sentencias -> sentencia .)
+
+
+state 40
+
+    (10) sentencia_for -> FOR PARENIZQ inicializacion PUNTOYCOMA condicion PUNTOYCOMA incremento PARENDER LLAVEIZQ lista_sentencias LLAVEDER .
+
+    INT             reduce using rule 10 (sentencia_for -> FOR PARENIZQ inicializacion PUNTOYCOMA condicion PUNTOYCOMA incremento PARENDER LLAVEIZQ lista_sentencias LLAVEDER .)
+    FOR             reduce using rule 10 (sentencia_for -> FOR PARENIZQ inicializacion PUNTOYCOMA condicion PUNTOYCOMA incremento PARENDER LLAVEIZQ lista_sentencias LLAVEDER .)
+    IMPRIMIR        reduce using rule 10 (sentencia_for -> FOR PARENIZQ inicializacion PUNTOYCOMA condicion PUNTOYCOMA incremento PARENDER LLAVEIZQ lista_sentencias LLAVEDER .)
+    ID              reduce using rule 10 (sentencia_for -> FOR PARENIZQ inicializacion PUNTOYCOMA condicion PUNTOYCOMA incremento PARENDER LLAVEIZQ lista_sentencias LLAVEDER .)
+    $end            reduce using rule 10 (sentencia_for -> FOR PARENIZQ inicializacion PUNTOYCOMA condicion PUNTOYCOMA incremento PARENDER LLAVEIZQ lista_sentencias LLAVEDER .)
+    LLAVEDER        reduce using rule 10 (sentencia_for -> FOR PARENIZQ inicializacion PUNTOYCOMA condicion PUNTOYCOMA incremento PARENDER LLAVEIZQ lista_sentencias LLAVEDER .)
+
+
+state 41
+
+    (14) lista_sentencias -> lista_sentencias sentencia .
+
+    LLAVEDER        reduce using rule 14 (lista_sentencias -> lista_sentencias sentencia .)
+    FOR             reduce using rule 14 (lista_sentencias -> lista_sentencias sentencia .)
+    IMPRIMIR        reduce using rule 14 (lista_sentencias -> lista_sentencias sentencia .)
+    ID              reduce using rule 14 (lista_sentencias -> lista_sentencias sentencia .)
+

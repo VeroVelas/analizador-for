@@ -1,140 +1,300 @@
 from flask import Flask, request, render_template_string
-import re
+import ply.lex as lex
+import ply.yacc as yacc
 
 app = Flask(__name__)
 
-# Definición de tokens para el analizador léxico
-tokens = {
-    'PR': r'\b(for|if|else|while|return)\b',
-    'ID': r'\b[a-zA-Z_][a-zA-Z_0-9]*\b',
-    'NUM': r'\b\d+\b',
-    'SYM': r'[;{}()\[\]=<>!+-/*]',
-    'ERR': r'.'
+# Palabras reservadas y tokens
+reservadas = {
+    'for': 'FOR',
+    'system.out.println': 'IMPRIMIR',
+    'int': 'INT'
 }
 
-# Plantilla HTML para mostrar resultados
-html_template = '''
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Analizador Léxico, Sintáctico y Semántico</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-</head>
-<body>
-    <div class="container">
-        <h1 class="mt-5">Analizador Léxico, Sintáctico y Semántico</h1>
-        <form method="post">
-            <div class="form-group">
-                <label for="code">Código</label>
-                <textarea class="form-control" name="code" rows="10" cols="50">{{ code }}</textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Analizar</button>
-        </form>
-        <h2 class="mt-4">Analizador Léxico</h2>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Tokens</th><th>PR</th><th>ID</th><th>Números</th><th>Símbolos</th><th>Error</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in lexical %}
-                <tr>
-                    <td>{{ row[0] }}</td><td>{{ row[1] }}</td><td>{{ row[2] }}</td><td>{{ row[3] }}</td><td>{{ row[4] }}</td><td>{{ row[5] }}</td>
-                </tr>
-                {% endfor %}
-                <tr>
-                    <td>Total</td><td>{{ total['PR'] }}</td><td>{{ total['ID'] }}</td><td>{{ total['NUM'] }}</td><td>{{ total['SYM'] }}</td><td>{{ total['ERR'] }}</td>
-                </tr>
-            </tbody>
-        </table>
-        <h2>Analizador Sintáctico y Semántico</h2>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Sintáctico</th><th>Semántico</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{{ syntactic }}</td><td>{{ semantic }}</td>
-                </tr>
-            </tbody>
-        </table>
-        <h2>Código Corregido</h2>
-        <pre>{{ corrected_code }}</pre>
-    </div>
-</body>
-</html>
-'''
+tokens = (
+    'PARENIZQ', 'PARENDER', 'PUNTOYCOMA', 'LLAVEIZQ', 'LLAVEDER',
+    'IGUAL', 'NUMERO', 'MENORIGUAL', 'INCREMENTO', 'ID'
+) + tuple(reservadas.values())
 
-def analyze_lexical(code):
-    results = {'PR': 0, 'ID': 0, 'NUM': 0, 'SYM': 0, 'ERR': 0}
-    rows = []
-    for line in code.split('\n'):
-        row = [''] * 6
-        for token_name, token_pattern in tokens.items():
-            for match in re.findall(token_pattern, line):
-                results[token_name] += 1
-                row[list(tokens.keys()).index(token_name)] = 'x'
-        rows.append(row)
-    return rows, results
+# Definición de tokens
+t_PARENIZQ    = r'\('
+t_PARENDER    = r'\)'
+t_PUNTOYCOMA  = r';'
+t_LLAVEIZQ    = r'\{'
+t_LLAVEDER    = r'\}'
+t_IGUAL       = r'='
+t_MENORIGUAL  = r'<='
+t_INCREMENTO  = r'\+\+'
 
-def correct_syntactic(code):
-    corrected_code = re.sub(r'\bfor\s*\(\s*.*\s*\)\s*\{', r'for (int i = 1; i <= 19; i++) {', code)
-    corrected_code = re.sub(r'\{.*\}', r'{\n    System.out.println("hola");\n}', corrected_code, flags=re.DOTALL)
-    return corrected_code
+# Definición de identificadores y números
+def t_ID(t):
+    r'[a-zA-Z_][a-zA-Z_0-9\.]*'
+    t.type = reservadas.get(t.value.lower(), 'ID')
+    return t
 
-def correct_semantic(code):
-    corrected_code = re.sub(r'\bSystem\.out\.println\s*\(.*\)\s*;', r'System.out.println("hola");', code)
-    return corrected_code
+def t_NUMERO(t):
+    r'\d+'
+    t.value = int(t.value)
+    return t
 
-def analyze_syntactic(code):
-    corrected_code = code
-    errors = []
+# Ignorar espacios y tabulaciones
+t_ignore = ' \t'
 
-    if not re.search(r'\bfor\s*\(\s*int\s+\w+\s*=\s*\d+\s*;\s*\w+\s*<=\s*\d+\s*;\s*\w+\+\+\s*\)\s*\{', code):
-        errors.append("Error en la sintaxis del bucle 'for'. Asegúrate de declarar el tipo de variable correctamente, por ejemplo: 'for (int i = 1; i <= 19; i++) {'.")
-        corrected_code = correct_syntactic(corrected_code)
+# Manejo de errores léxicos
+def t_error(t):
+    print(f"Carácter ilegal '{t.value[0]}'")
+    t.lexer.skip(1)
 
-    if not re.search(r'\{\s*\n\s*System\.out\.println\s*\(\s*".*"\s*\)\s*;\s*\n\s*\}', code):
-        errors.append("Error en el cuerpo del bucle 'for'. Asegúrate de usar 'System.out.println()' correctamente y de que las llaves estén bien colocadas.")
-        corrected_code = correct_syntactic(corrected_code)
+# Construcción del lexer
+analizadorLexico = lex.lex()
 
-    if not errors:
-        return "Sintaxis correcta", corrected_code
+# --- Análisis Sintáctico ---
+# Precedencia y asociatividad de operadores
+precedencia = ()
+
+# Almacén de variables declaradas
+variables = set()
+errores = []
+
+# Definición de la gramática
+def p_programa(p):
+    '''programa : lista_declaraciones'''
+    p[0] = p[1]
+
+def p_lista_declaraciones(p):
+    '''lista_declaraciones : lista_declaraciones declaracion
+                           | declaracion'''
+    if len(p) == 3:
+        p[0] = p[1] + [p[2]]
     else:
-        return " ".join(errors), corrected_code
+        p[0] = [p[1]]
 
-def analyze_semantic(code):
-    errors = []
-    if not re.search(r'\bSystem\.out\.println\s*\(\s*".*"\s*\)\s*;', code):
-        errors.append("Error semántico en System.out.println. Asegúrate de usar 'System.out.println()' correctamente con comillas dobles para las cadenas.")
-        corrected_code = correct_semantic(code)
+def p_declaracion(p):
+    '''declaracion : declaracion_variable
+                   | sentencia'''
+    p[0] = p[1]
+
+def p_declaracion_variable(p):
+    '''declaracion_variable : INT ID PUNTOYCOMA'''
+    if p[2] in variables:
+        errores.append(f"Error: Variable '{p[2]}' redeclarada.")
     else:
-        corrected_code = code
+        variables.add(p[2])
+    p[0] = f"{p[1]} {p[2]};"
 
-    if not errors:
-        return "Uso correcto de System.out.println", corrected_code
+def p_sentencia(p):
+    '''sentencia : sentencia_for
+                 | sentencia_imprimir
+                 | sentencia_expresion'''
+    p[0] = p[1]
+
+def p_sentencia_for(p):
+    '''sentencia_for : FOR PARENIZQ inicializacion PUNTOYCOMA condicion PUNTOYCOMA incremento PARENDER LLAVEIZQ lista_sentencias LLAVEDER'''
+    if p[3][0] != 'asignar' or p[3][1] not in variables:
+        errores.append(f"Error: Variable '{p[3][1]}' no declarada.")
+    p[0] = f"{p[1]}({p[3]}; {p[5]}; {p[7]}) {{\n{p[10]}\n}}"
+
+def p_inicializacion(p):
+    '''inicializacion : ID IGUAL NUMERO'''
+    p[0] = ('asignar', p[1], p[3])
+
+def p_condicion(p):
+    '''condicion : ID MENORIGUAL NUMERO'''
+    p[0] = f"{p[1]} <= {p[3]}"
+
+def p_incremento(p):
+    '''incremento : ID INCREMENTO'''
+    p[0] = f"{p[1]}++"
+
+def p_lista_sentencias(p):
+    '''lista_sentencias : lista_sentencias sentencia
+                        | sentencia'''
+    if len(p) == 3:
+        p[0] = p[1] + "\n" + p[2]
     else:
-        return " ".join(errors), corrected_code
+        p[0] = p[1]
 
+def p_sentencia_imprimir(p):
+    '''sentencia_imprimir : IMPRIMIR PARENIZQ expresion PARENDER PUNTOYCOMA'''
+    p[0] = f"{p[1]}({p[3]});"
+
+def p_sentencia_expresion(p):
+    '''sentencia_expresion : expresion PUNTOYCOMA'''
+    p[0] = f"{p[1]};"
+
+def p_expresion(p):
+    '''expresion : ID'''
+    if p[1] not in variables:
+        errores.append(f"Error: Variable '{p[1]}' no declarada.")
+    p[0] = p[1]
+
+# Manejo de errores sintácticos
+def p_error(p):
+    if p:
+        print(f"Error de sintaxis en '{p.value}'")
+        errores.append(f"Error de sintaxis en '{p.value}'")
+    else:
+        print("Error de sintaxis en EOF")
+        errores.append("Error de sintaxis en EOF")
+
+# Construcción del parser
+analizadorSintactico = yacc.yacc()
+
+# --- Aplicación Flask ---
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    code = ''
-    lexical_results = []
-    total_results = {'PR': 0, 'ID': 0, 'NUM': 0, 'SYM': 0, 'ERR': 0}
-    syntactic_result = ''
-    semantic_result = ''
-    corrected_code = ''
+    global errores
+    global variables
+    errores = []
+    variables = set()
+    resultado = ""
+    conteoTokens = {
+        'ID': 0, 'PR': 0, 'NUMEROS': 0, 'SIMBOLOS': 0, 'ERRORES': 0, 'TOTAL': 0
+    }
     if request.method == 'POST':
-        code = request.form['code']
-        lexical_results, total_results = analyze_lexical(code)
-        syntactic_result, corrected_code = analyze_syntactic(code)
-        semantic_result, corrected_code = analyze_semantic(corrected_code)
-    return render_template_string(html_template, code=code, lexical=lexical_results, total=total_results, syntactic=syntactic_result, semantic=semantic_result, corrected_code=corrected_code)
+        codigo = request.form['codigo']
+        analizadorLexico.input(codigo)
+        listaTokens = []
+        while True:
+            tok = analizadorLexico.token()
+            if not tok:
+                break
+            listaTokens.append(str(tok))
+            if tok.type in conteoTokens:
+                conteoTokens[tok.type] += 1
+            elif tok.type in reservadas.values():
+                conteoTokens['PR'] += 1
+            else:
+                conteoTokens['SIMBOLOS'] += 1
+
+        try:
+            analizadorSintactico.parse(codigo)
+            if errores:
+                resultado = "\n".join(errores)
+                conteoTokens['ERRORES'] = len(errores)
+            else:
+                resultado = "Compilación exitosa:\n" + "\n".join(listaTokens)
+        except SyntaxError as e:
+            resultado = str(e)
+            conteoTokens['ERRORES'] += 1
+        except Exception as e:
+            resultado = "Ocurrió un error inesperado: " + str(e)
+            conteoTokens['ERRORES'] += 1
+
+        conteoTokens['TOTAL'] = sum(conteoTokens.values())
+
+    return render_template_string('''
+        <!doctype html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Analizador Léxico, Sintáctico y Semántico</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    background-color: #f4f4f9;
+                    color: #333;
+                    margin: 0;
+                    padding: 0;
+                }
+                .container {
+                    max-width: 800px;
+                    margin: 20px auto;
+                    padding: 20px;
+                    background-color: #fff;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                }
+                h1 {
+                    text-align: center;
+                    color: #444;
+                }
+                textarea {
+                    width: 100%;
+                    height: 200px;
+                    padding: 10px;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    resize: none;
+                    margin-bottom: 10px;
+                    font-family: monospace;
+                }
+                input[type="submit"] {
+                    display: block;
+                    width: 100%;
+                    padding: 10px;
+                    border: none;
+                    background-color: #007bff;
+                    color: #fff;
+                    border-radius: 5px;
+                    font-size: 16px;
+                    cursor: pointer;
+                    margin-bottom: 20px;
+                }
+                input[type="submit"]:hover {
+                    background-color: #0056b3;
+                }
+                pre {
+                    background-color: #f4f4f4;
+                    padding: 10px;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 20px;
+                }
+                table, th, td {
+                    border: 1px solid #ddd;
+                }
+                th, td {
+                    padding: 10px;
+                    text-align: center;
+                }
+                th {
+                    background-color: #007bff;
+                    color: #fff;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Analizador Léxico, Sintáctico y Semántico</h1>
+                <form method="post">
+                    <textarea name="codigo" rows="10" placeholder="Introduce tu código aquí...">{{ request.form['codigo'] }}</textarea><br>
+                    <input type="submit" value="Compilar">
+                </form>
+                {% if resultado %}
+                    <h2>Resultado:</h2>
+                    <pre>{{ resultado }}</pre>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>PR</th>
+                                <th>Números</th>
+                                <th>Símbolos</th>
+                                <th>Errores</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ conteoTokens['ID'] }}</td>
+                                <td>{{ conteoTokens['PR'] }}</td>
+                                <td>{{ conteoTokens['NUMEROS'] }}</td>
+                                <td>{{ conteoTokens['SIMBOLOS'] }}</td>
+                                <td>{{ conteoTokens['ERRORES'] }}</td>
+                                <td>{{ conteoTokens['TOTAL'] }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+        </body>
+        </html>
+    ''', resultado=resultado, conteoTokens=conteoTokens)
 
 if __name__ == '__main__':
     app.run(debug=True)
